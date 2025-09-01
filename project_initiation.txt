@@ -6,6 +6,11 @@
     -   npm i express dotenv mongoose jsonwebtoken stripe cloudinary cookie-parser bcryptjs ioredis nodemon
     * cloudinary sẽ bị deprecated -> npm install cloudinary@latest
 
+1.3. Truy cập upstash.com để dùng các dịch vụ Database as a Service (DBaaS)
+
+1.4. Cài lib để dùng Upstash Redis
+    -   npm install @upstash/redis
+
 2. frontend
 2.1. Tạo project react/vite
     -   npm create vite@latest .
