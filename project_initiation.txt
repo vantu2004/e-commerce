@@ -1,0 +1,15 @@
+1. backend
+1.1. Tạo package.json
+    -   npm init -y
+
+1.2. Cài các dependencies cần thiết
+    -   npm i express dotenv mongoose jsonwebtoken stripe cloudinary cookie-parser bcryptjs ioredis nodemon
+    * cloudinary sẽ bị deprecated -> npm install cloudinary@latest
+
+2. frontend
+2.1. Tạo project react/vite
+    -   npm create vite@latest .
+
+2.2. Cài các dependencies cần thiết
+    -   npm install
+
