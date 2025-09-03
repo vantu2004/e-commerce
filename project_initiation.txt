@@ -11,6 +11,8 @@
 1.4. Cài lib để dùng Upstash Redis
     -   npm install @upstash/redis
 
+1.5. Truy cập https://dashboard.stripe.com/test/dashboard để lấy STRIPE_SECRET_KEY
+
 2. frontend
 2.1. Tạo project react/vite
     -   npm create vite@latest .
