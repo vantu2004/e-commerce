@@ -8,10 +8,19 @@ import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupon.route.js";
 import paymentRoutes from "./routes/payment.route.js";
 import analyticRoutes from "./routes/analytic.route.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    // mặc định CORS ko cho phép gửi kèm cookie, session nên phải bật true
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());

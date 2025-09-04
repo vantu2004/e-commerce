@@ -13,6 +13,12 @@
 
 1.5. Truy cập https://dashboard.stripe.com/test/dashboard để lấy STRIPE_SECRET_KEY
 
+1.6. Cài gói cấu hình để BE cho phép truy cập từ nhiều nguồn
+    -   npm i cors
+
+1.7. Cài cross-env giúp thiết lập biến môi trường (environment variables) theo cách cross-platform
+    -   npm i -D cross-env
+
 2. frontend
 2.1. Tạo project react/vite
     -   npm create vite@latest .
@@ -22,4 +28,4 @@
 
 2.3. Cài thêm dêpndencies
     (framer-motion: animation, react-confetti: bắn hiệu ứng pháo giấy, react-hot-toast: thông báo, recharts: thư viện vẽ biểu đồ cho React)
-    -   npm i react-router-dom axios @stripe/stripe-js framer-motion lucide-react react-confetti react-hot-toast recharts
+    -   npm i react-router-dom axios @stripe/stripe-js framer-motion lucide-react react-confetti react-hot-toast recharts zustand
