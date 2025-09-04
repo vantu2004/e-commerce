@@ -20,3 +20,6 @@
 2.2. Cài các dependencies cần thiết
     -   npm install
 
+2.3. Cài thêm dêpndencies
+    (framer-motion: animation, react-confetti: bắn hiệu ứng pháo giấy, react-hot-toast: thông báo, recharts: thư viện vẽ biểu đồ cho React)
+    -   npm i react-router-dom axios @stripe/stripe-js framer-motion lucide-react react-confetti react-hot-toast recharts
