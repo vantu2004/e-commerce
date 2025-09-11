@@ -8,6 +8,7 @@ import { useUserStore } from "./stores/useUserStore";
 import { Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
+import AdminPage from "./pages/AdminPage.jsx";
 
 const App = () => {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -42,6 +43,19 @@ const App = () => {
             path="/login"
             element={!user ? <LoginPage /> : <Navigate to="/" replace />}
           />
+
+          <Route
+            path="/secret-dashboard"
+            element={
+              user && user.role === "ADMIN" ? (
+                <AdminPage />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 

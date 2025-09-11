@@ -5,9 +5,6 @@ import cloudinary from "../lib/cloudinary.js";
 export const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find();
-    if (!products || products.length === 0) {
-      return res.status(204).send();
-    }
 
     res
       .status(200)
@@ -30,9 +27,6 @@ export const getFeaturedProducts = async (req, res) => {
 
     // lean() giúp trả về POJO (class chỉ chứa dữ liệu, ko chứa các tinh năng thêm như method, middleware,...)
     featuredProducts = await Product.find({ isFeatured: true }).lean();
-    if (!featuredProducts || featuredProducts.length === 0) {
-      return res.status(204).send();
-    }
 
     res.status(200).json({
       message: "Featured products fetched successfully",
@@ -46,12 +40,13 @@ export const getFeaturedProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const { name, price, description, image, category } = req.body;
-    let cloudinaryResult;
-    if (image) {
-      cloudinaryResult = await cloudinary.uploader.upload(image, {
-        folder: "products",
-      });
+    if (!name || !price || !description || !image || !category) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
+
+    const cloudinaryResult = await cloudinary.uploader.upload(image, {
+      folder: "products",
+    });
 
     const newProduct = new Product({
       name,
@@ -109,11 +104,6 @@ export const getRecommendedProducts = async (req, res) => {
       },
     ]);
 
-    // Nếu không có sản phẩm nào thì trả về HTTP 204 (No Content)
-    if (!recommendedProducts || recommendedProducts.length === 0) {
-      return res.status(204).send();
-    }
-
     // Thành công -> trả về list 3 sản phẩm random
     res.status(200).json({
       message: "Recommended products fetched successfully",
@@ -128,10 +118,6 @@ export const getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
     const products = await Product.find({ category });
-
-    if (!products || products.length === 0) {
-      return res.status(204).send();
-    }
 
     res.status(200).json({
       message: "Products fetched successfully",
