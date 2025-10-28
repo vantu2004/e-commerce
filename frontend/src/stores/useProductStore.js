@@ -20,6 +20,20 @@ export const useProductStore = create((set) => ({
     }
   },
 
+  fetchProductsByCategory: async (category) => {
+    set({ loading: true });
+    try {
+      const response = await axiosInstance.get(
+        `/products/category/${category}`
+      );
+      set({ products: response.data.products });
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   createProduct: async (newProduct) => {
     set({ loading: true });
     try {

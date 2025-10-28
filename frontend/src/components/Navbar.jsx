@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "../stores/useUserStore";
+import { useCartStore } from "../stores/useCartStore";
 
 /**
  * Beautiful, responsive, and accessible Navbar
@@ -32,7 +33,7 @@ export default function Navbar() {
   const { user, logout } = useUserStore();
   const isAdmin = user?.role === "ADMIN";
 
-  const cartCount = 2;
+  const { cart } = useCartStore();
 
   const [open, setOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -75,14 +76,14 @@ export default function Navbar() {
               >
                 <ShoppingCart size={18} />
                 <span className="hidden sm:inline">Cart</span>
-                {cartCount > 0 && (
+                {cart.length > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute -top-2 -right-2 min-w-[1.25rem] h-5 px-1 grid place-items-center rounded-full text-xs font-semibold bg-emerald-500 text-white shadow-md"
-                    aria-label={`${cartCount} items in cart`}
+                    aria-label={`${cart.length} items in cart`}
                   >
-                    {cartCount}
+                    {cart.length}
                   </motion.span>
                 )}
               </Link>
@@ -224,9 +225,9 @@ export default function Navbar() {
                 >
                   <ShoppingCart size={18} />
                   Cart
-                  {cartCount > 0 && (
+                  {cart.length > 0 && (
                     <span className="ml-auto inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full text-xs font-semibold bg-emerald-500 text-white">
-                      {cartCount}
+                      {cart.length}
                     </span>
                   )}
                 </Link>

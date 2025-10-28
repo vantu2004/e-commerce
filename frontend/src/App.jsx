@@ -9,6 +9,7 @@ import { Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
+import CategoryPage from "./pages/CategoryPage.jsx";
 
 const App = () => {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -54,6 +55,8 @@ const App = () => {
               )
             }
           />
+
+          <Route path="/category/:category" element={<CategoryPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
