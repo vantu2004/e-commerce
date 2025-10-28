@@ -19,31 +19,19 @@ export const useCartStore = create((set, get) => ({
     }
   },
 
-  addToCart: async (productId) => {
+  addToCart: async (product) => {
     try {
-      const response = await axiosInstance.post("/cart", { productId });
-      set((prevState) => {
-        // kiểm tra sản phẩm đã có trong giỏ hàng chưa
-        const existingItem = prevState.cart.find(
-          (item) => item.product._id === productId
-        );
-        const newCart = existingItem
-          ? prevState.cart.map((item) =>
-              item.product._id === productId
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            )
-          : [...prevState.cart, { product: { _id: productId }, quantity: 1 }];
-
-        return { cart: newCart };
+      const response = await axiosInstance.post("/cart", {
+        productId: product._id,
       });
 
-      get().calculateCartTotals();
+      set({ cart: response.data.cartItems });
 
-      toast.success(response.data.message);
+      toast.success("Product added to cart");
+
+      get().calculateCartTotals();
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
-      console.log(error);
+      toast.error(error.response?.data?.message || "An error occurred");
     }
   },
 
@@ -58,5 +46,32 @@ export const useCartStore = create((set, get) => ({
         : subtotal;
       return { subtotal, total };
     });
+  },
+
+  updateQuantity: async (productId, quantity) => {
+    try {
+      const response = await axiosInstance.put(`/cart/${productId}`, {
+        quantity,
+      });
+
+      set({ cart: response.data.cartItems });
+
+      get().calculateCartTotals();
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
+    }
+  },
+
+  removeFromCart: async (productId) => {
+    try {
+      const response = await axiosInstance.delete(`/cart/${productId}`);
+      set((prevState) => ({
+        cart: prevState.cart.filter((item) => item.product._id !== productId),
+      }));
+
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
+    }
   },
 }));

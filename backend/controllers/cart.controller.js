@@ -5,7 +5,7 @@ export const addToCart = async (req, res) => {
     const { productId } = req.body;
     const user = req.user;
     const existingItem = user.cartItems.find(
-      (item) => item?.product?._id === productId
+      (item) => item?.product?._id.toString() === productId
     );
 
     if (existingItem) {
@@ -15,6 +15,7 @@ export const addToCart = async (req, res) => {
     }
 
     await user.save();
+    await user.populate("cartItems.product");
 
     res.status(201).json({
       message: "Product added to cart successfully",
@@ -27,7 +28,7 @@ export const addToCart = async (req, res) => {
 
 export const removeAllFromCart = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { productId } = req.params;
     const user = req.user;
 
     // TH1: Nếu không có productId, xóa tất cả sản phẩm trong giỏ hàng
@@ -37,7 +38,7 @@ export const removeAllFromCart = async (req, res) => {
     // TH2: Nếu có productId, xóa sản phẩm khỏi giỏ hàng
     else {
       user.cartItems = user.cartItems.filter(
-        (item) => item.product.toString() !== productId
+        (item) => item?.product?._id.toString() !== productId
       );
     }
 
@@ -59,7 +60,7 @@ export const updateCartItemQuantity = async (req, res) => {
     const user = req.user;
 
     const cartItem = user.cartItems.find(
-      (item) => item.product.toString() === productId
+      (item) => item?.product?._id.toString() === productId
     );
 
     if (!cartItem) {
@@ -76,6 +77,7 @@ export const updateCartItemQuantity = async (req, res) => {
     }
 
     await user.save();
+    await user.populate("cartItems.product");
 
     res.status(200).json({
       message: "Cart item quantity updated successfully",
@@ -92,10 +94,6 @@ export const getCartItems = async (req, res) => {
     const user = await User.findById(req.user._id).populate(
       "cartItems.product"
     );
-
-    if (!user || !user.cartItems.length) {
-      return res.status(404).json({ message: "No cart items found" });
-    }
 
     res.status(200).json({
       message: "Cart items retrieved successfully",
