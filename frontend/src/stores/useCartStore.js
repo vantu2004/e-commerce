@@ -7,6 +7,7 @@ export const useCartStore = create((set, get) => ({
   coupon: null,
   total: 0,
   subtotal: 0,
+  isCouponApplied: false,
 
   fetchCartItems: async () => {
     try {
@@ -15,7 +16,7 @@ export const useCartStore = create((set, get) => ({
 
       get().calculateCartTotals();
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
+      console.error(error.response.data.message || "Something went wrong");
     }
   },
 
@@ -38,7 +39,7 @@ export const useCartStore = create((set, get) => ({
   calculateCartTotals: () => {
     set((state) => {
       const subtotal = state.cart.reduce(
-        (acc, item) => acc + item.price * item.quantity,
+        (acc, item) => acc + item.product.price * item.quantity,
         0
       );
       const total = state.coupon
