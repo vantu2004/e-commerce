@@ -24,19 +24,19 @@ export const createCheckoutSession = async (req, res) => {
      * - Duyệt danh sách sản phẩm để tính tổng
      */
     const lineItems = products.map((item) => {
-      const itemTotal = item.price * item.quantity;
+      const itemTotal = item.product.price * item.quantity;
       totalAmount += itemTotal;
 
       return {
         price_data: {
           currency: "usd",
           product_data: {
-            name: item.name,
-            images: [item.image],
+            name: item.product.name,
+            images: [item.product.image],
           },
-          unit_amount: Math.round(item.price * 100), // USD -> cent
+          unit_amount: Math.round(item.product.price * 100), // USD -> cent
         },
-        quantity: item.quantity,
+        quantity: item.quantity || 1,
       };
     });
 
@@ -75,9 +75,9 @@ export const createCheckoutSession = async (req, res) => {
         couponCode: couponCode || "",
         products: JSON.stringify(
           products.map((item) => ({
-            productId: item.id, // đổi thành productId cho khớp với Order schema
+            productId: item.product._id, // đổi thành productId cho khớp với Order schema
             quantity: item.quantity,
-            price: item.price,
+            price: item.product.price,
           }))
         ),
       },
