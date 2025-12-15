@@ -23,8 +23,11 @@ const App = () => {
   }, [checkAuth]);
 
   useEffect(() => {
-    fetchCartItems();
-  }, [fetchCartItems]);
+    // phải đợi checkAuth xong mới load tiếp
+    if (!checkingAuth && user) {
+      fetchCartItems();
+    }
+  }, [checkingAuth, user, fetchCartItems]);
 
   if (checkingAuth) {
     return <LoadingSpinner />;
@@ -74,7 +77,7 @@ const App = () => {
           <Route
             path="/purchase-success"
             element={
-              user ? <PurchaseSuccessPage /> : <Navigate to="/login" replace />
+              checkingAuth ? <LoadingSpinner /> : <PurchaseSuccessPage />
             }
           />
 

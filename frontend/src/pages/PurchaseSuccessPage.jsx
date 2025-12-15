@@ -3,26 +3,31 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCartStore } from "../stores/useCartStore";
 import axios from "../lib/axios";
+import Confetti from "react-confetti";
 
 const PurchaseSuccessPage = () => {
   const [isProcessing, setIsProcessing] = useState(true);
-  const { removeFromCart } = useCartStore();
+  const { clearAllCartItems } = useCartStore();
   const [error, setError] = useState(null);
+  const [orderId, setOrderId] = useState(null);
+
+  const handleCheckoutSuccess = async (sessionId) => {
+    try {
+      const res = await axios.post("/payments/checkout-success", {
+        sessionId,
+      });
+
+      setOrderId(res.data.orderId);
+
+      clearAllCartItems();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   useEffect(() => {
-    const handleCheckoutSuccess = async (sessionId) => {
-      try {
-        await axios.post("/payments/checkout-success", {
-          sessionId,
-        });
-        removeFromCart();
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsProcessing(false);
-      }
-    };
-
     const sessionId = new URLSearchParams(window.location.search).get(
       "session_id"
     );
@@ -32,11 +37,23 @@ const PurchaseSuccessPage = () => {
       setIsProcessing(false);
       setError("No session ID found in the URL");
     }
-  }, [removeFromCart]);
+  }, []);
 
-  if (isProcessing) return "Processing...";
+  if (isProcessing)
+    return (
+      <div className="flex justify-center items-center mt-20">
+        <span className="text-xl font-semibold animate-pulse bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+          Processing...
+        </span>
+      </div>
+    );
 
-  if (error) return `Error: ${error}`;
+  if (error)
+    return (
+      <div className="flex justify-center items-center mt-20">
+        <div className="text-red-400 text-lg font-medium">{error}</div>
+      </div>
+    );
 
   return (
     <div className="h-screen flex items-center justify-center px-4">
@@ -68,7 +85,7 @@ const PurchaseSuccessPage = () => {
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-400">Order number</span>
               <span className="text-sm font-semibold text-emerald-400">
-                #12345
+                {orderId}
               </span>
             </div>
             <div className="flex items-center justify-between">

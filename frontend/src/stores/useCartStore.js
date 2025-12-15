@@ -65,12 +65,19 @@ export const useCartStore = create((set, get) => ({
 
   removeFromCart: async (productId) => {
     try {
-      const response = await axiosInstance.delete(`/cart/${productId}`);
+      await axiosInstance.delete(`/cart/${productId}`);
       set((prevState) => ({
         cart: prevState.cart.filter((item) => item.product._id !== productId),
       }));
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
+    }
+  },
 
-      toast.success(response.data.message);
+  clearAllCartItems: async () => {
+    try {
+      await axiosInstance.delete("/cart");
+      set({ cart: [] });
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     }

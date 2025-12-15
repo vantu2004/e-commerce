@@ -26,21 +26,14 @@ export const addToCart = async (req, res) => {
   }
 };
 
-export const removeAllFromCart = async (req, res) => {
+export const removeFromCart = async (req, res) => {
   try {
     const { productId } = req.params;
     const user = req.user;
 
-    // TH1: Nếu không có productId, xóa tất cả sản phẩm trong giỏ hàng
-    if (!productId) {
-      user.cartItems = [];
-    }
-    // TH2: Nếu có productId, xóa sản phẩm khỏi giỏ hàng
-    else {
-      user.cartItems = user.cartItems.filter(
-        (item) => item?.product?._id.toString() !== productId
-      );
-    }
+    user.cartItems = user.cartItems.filter(
+      (item) => item?.product?._id.toString() !== productId
+    );
 
     await user.save();
 
@@ -49,6 +42,7 @@ export const removeAllFromCart = async (req, res) => {
       cartItems: user.cartItems,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error removing items from cart" });
   }
 };
@@ -101,5 +95,18 @@ export const getCartItems = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Error retrieving cart items" });
+  }
+};
+
+export const clearAllCartItems = async (req, res) => {
+  try {
+    const user = req.user;
+    user.cartItems = [];
+
+    await user.save();
+
+    res.status(200).json({ message: "Cart cleared successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error clearing cart items" });
   }
 };

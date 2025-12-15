@@ -136,12 +136,20 @@ async function createNewCoupon(userId) {
  */
 export const checkoutSuccess = async (req, res) => {
   try {
-    const { sessionId } = req.body; // lấy sessionId từ client
+    const { sessionId } = req.body;
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    // Chỉ xử lý khi thanh toán thành công
+    // CHẶN REQUEST TRÙNG
+    const existed = await Order.findOne({ stripeSessionId: sessionId });
+    if (existed) {
+      return res.status(200).json({
+        success: true,
+        message: "Order already processed",
+        orderId: existed._id,
+      });
+    }
+
     if (session.payment_status === "paid") {
-      // Nếu có dùng coupon thì disable coupon đó
       if (session.metadata.couponCode) {
         await Coupon.findOneAndUpdate(
           {
@@ -152,17 +160,16 @@ export const checkoutSuccess = async (req, res) => {
         );
       }
 
-      // Tạo đơn hàng mới trong DB
       const products = JSON.parse(session.metadata.products);
 
       const newOrder = new Order({
         user: session.metadata.userId,
         products: products.map((item) => ({
-          product: item.productId, // khớp với productId đã lưu ở metadata
+          product: item.productId,
           quantity: item.quantity,
           price: item.price,
         })),
-        totalAmount: session.amount_total / 100, // Stripe trả về cent, chuyển về USD
+        totalAmount: session.amount_total / 100,
         stripeSessionId: sessionId,
       });
 
@@ -175,9 +182,9 @@ export const checkoutSuccess = async (req, res) => {
       });
     }
 
-    // Nếu chưa thanh toán thì báo lỗi
     res.status(400).json({ success: false, message: "Payment not completed" });
   } catch (error) {
+    console.log("Error: ", error);
     res
       .status(500)
       .json({ message: "Error processing payment", error: error.message });

@@ -3,7 +3,7 @@ import axiosInstance from "../lib/axios";
 import { toast } from "react-hot-toast";
 
 export const useUserStore = create((set) => ({
-  user: null,
+  user: undefined,
   loading: false,
   checkingAuth: false,
 
@@ -14,6 +14,7 @@ export const useUserStore = create((set) => ({
       set({ user: response.data.user });
     } catch (error) {
       set({ user: null });
+      console.log(error);
     } finally {
       set({ checkingAuth: false });
     }
@@ -63,6 +64,7 @@ export const useUserStore = create((set) => ({
       toast.success(response.data.message);
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
+      console.log(error);
     } finally {
       set({ loading: false });
     }
