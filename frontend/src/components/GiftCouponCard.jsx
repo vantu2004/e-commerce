@@ -4,26 +4,26 @@ import { useCartStore } from "../stores/useCartStore";
 
 const GiftCouponCard = () => {
   const [userInputCode, setUserInputCode] = useState("");
-  const { coupon, isCouponApplied } = useCartStore();
+  const { coupon, isCouponApplied, applyCoupon, removeCoupon, getMyCoupon } =
+    useCartStore();
 
-  // useEffect(() => {
-  //   getMyCoupon();
-  // }, [getMyCoupon]);
+  useEffect(() => {
+    getMyCoupon();
+  }, [getMyCoupon]);
 
-  // useEffect(() => {
-  //   if (coupon) setUserInputCode(coupon.code);
-  // }, [coupon]);
+  useEffect(() => {
+    if (coupon) {
+      setUserInputCode(coupon.code);
+    }
+  }, [coupon]);
 
-  const handleApplyCoupon = () => {
-    // if (!userInputCode) return;
-    // applyCoupon(userInputCode);
-    console.log("apply coupon");
+  const handleApplyCoupon = async () => {
+    if (!userInputCode) return;
+    await applyCoupon(userInputCode);
   };
 
   const handleRemoveCoupon = async () => {
-    // await removeCoupon();
-    // setUserInputCode("");
-    console.log("remove coupon");
+    await removeCoupon();
   };
 
   return (

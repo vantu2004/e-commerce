@@ -13,6 +13,7 @@ import CategoryPage from "./pages/CategoryPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import { useCartStore } from "./stores/useCartStore";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage.jsx";
+import PurchaseCancelPage from "./pages/PurchaseCancelPage.jsx";
 
 const App = () => {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -80,6 +81,8 @@ const App = () => {
               checkingAuth ? <LoadingSpinner /> : <PurchaseSuccessPage />
             }
           />
+
+          <Route path="/purchase-cancel" element={<PurchaseCancelPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -26,14 +26,11 @@ export const validateCoupon = async (req, res) => {
       code,
       userId: req.user._id,
       isActive: true,
+      expiryDate: { $gt: Date.now() },
     });
 
     if (!coupon) {
       return res.status(404).json({ message: "Invalid or expired coupon" });
-    }
-
-    if (coupon.expiryDate < Date.now()) {
-      return res.status(400).json({ message: "Coupon has expired" });
     }
 
     res.status(200).json({

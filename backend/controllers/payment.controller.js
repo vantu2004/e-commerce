@@ -47,6 +47,7 @@ export const createCheckoutSession = async (req, res) => {
         code: couponCode,
         userId: req.user._id,
         isActive: true,
+        expiryDate: { $gt: Date.now() },
       });
 
       if (coupon) {
@@ -84,7 +85,7 @@ export const createCheckoutSession = async (req, res) => {
     });
 
     // Nếu tổng tiền lớn hơn 20000 → tặng coupon mới
-    if (totalAmount >= 20000) {
+    if (totalAmount >= 100) {
       await createNewCoupon(req.user._id);
     }
 
@@ -106,10 +107,12 @@ export const createCheckoutSession = async (req, res) => {
  * ================================
  */
 async function createStripeCoupon(discountPercentage) {
-  return await stripe.coupons.create({
+  const coupon = await stripe.coupons.create({
     duration: "once",
     percent_off: discountPercentage,
   });
+
+  return coupon.id;
 }
 
 /**
@@ -118,6 +121,9 @@ async function createStripeCoupon(discountPercentage) {
  * ================================
  */
 async function createNewCoupon(userId) {
+  // phải tìm và xóa coupon cũ trước khi tạo 1 coupon mới
+  await Coupon.findOneAndDelete({ userId: userId });
+
   const newCoupon = new Coupon({
     code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
     expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 ngày

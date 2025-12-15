@@ -43,7 +43,7 @@ export const useCartStore = create((set, get) => ({
         0
       );
       const total = state.coupon
-        ? subtotal - (subtotal * state.coupon.discount) / 100
+        ? subtotal - (subtotal * state.coupon.discountPercentage) / 100
         : subtotal;
       return { subtotal, total };
     });
@@ -81,5 +81,34 @@ export const useCartStore = create((set, get) => ({
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
     }
+  },
+
+  getMyCoupon: async () => {
+    try {
+      const response = await axiosInstance.get("/coupons");
+      set({ coupon: response.data.coupon });
+    } catch (error) {
+      console.error(error.response.data.message || "Something went wrong");
+    }
+  },
+
+  applyCoupon: async (code) => {
+    try {
+      const response = await axiosInstance.post("/coupons/validate", { code });
+      set({ coupon: response.data.coupon, isCouponApplied: true });
+
+      get().calculateCartTotals();
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong");
+      set({ coupon: null, isCouponApplied: false });
+    }
+  },
+
+  removeCoupon: () => {
+    set({ coupon: null, isCouponApplied: false });
+
+    get().calculateCartTotals();
+
+    toast.success("Coupon removed successfully");
   },
 }));
