@@ -15,8 +15,8 @@ import {
 
 const AnalyticsTab = () => {
   const [analyticsData, setAnalyticsData] = useState({
-    users: 0,
-    products: 0,
+    totalUsers: 0,
+    totalProducts: 0,
     totalSales: 0,
     totalRevenue: 0,
   });
@@ -24,18 +24,22 @@ const AnalyticsTab = () => {
   const [dailySalesData, setDailySalesData] = useState([]);
 
   useEffect(() => {
-    // const fetchAnalyticsData = async () => {
-    // 	try {
-    // 		const response = await axios.get("/analytics");
-    // 		setAnalyticsData(response.data.analyticsData);
-    // 		setDailySalesData(response.data.dailySalesData);
-    // 	} catch (error) {
-    // 		console.error("Error fetching analytics data:", error);
-    // 	} finally {
-    // 		setIsLoading(false);
-    // 	}
-    // };
-    // fetchAnalyticsData();
+    const fetchAnalyticsData = async () => {
+      try {
+        const response = await axios.get("/analytics");
+
+        console.log(response);
+
+        setAnalyticsData(response.data.data.analyticsData);
+        setDailySalesData(response.data.data.dailySalesData);
+      } catch (error) {
+        console.error("Error fetching analytics data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAnalyticsData();
   }, []);
 
   if (isLoading) {
@@ -47,13 +51,13 @@ const AnalyticsTab = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <AnalyticsCard
           title="Total Users"
-          value={analyticsData.users.toLocaleString()}
+          value={analyticsData.totalUsers.toLocaleString()}
           icon={Users}
           color="from-emerald-500 to-teal-700"
         />
         <AnalyticsCard
           title="Total Products"
-          value={analyticsData.products.toLocaleString()}
+          value={analyticsData.totalProducts.toLocaleString()}
           icon={Package}
           color="from-emerald-500 to-green-700"
         />
@@ -79,7 +83,7 @@ const AnalyticsTab = () => {
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={dailySalesData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" stroke="#D1D5DB" />
+            <XAxis dataKey="date" stroke="#D1D5DB" />
             <YAxis yAxisId="left" stroke="#D1D5DB" />
             <YAxis yAxisId="right" orientation="right" stroke="#D1D5DB" />
             <Tooltip />

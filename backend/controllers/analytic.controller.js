@@ -2,10 +2,10 @@ import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
 
-export const getAnalyticsData = async (req, res) => {
+export const getAnalyticsData = async () => {
   try {
-    const totalUsers = User.countDocuments();
-    const totalProducts = Product.countDocuments();
+    const totalUsers = await User.countDocuments();
+    const totalProducts = await Product.countDocuments();
 
     // aggregate() nhận vào một mảng các stage (bước xử lý)
     const salesData = await Order.aggregate([
@@ -27,12 +27,12 @@ export const getAnalyticsData = async (req, res) => {
       totalRevenue: 0,
     };
 
-    res.status(200).json({
+    return {
       totalUsers,
       totalProducts,
       totalSales,
       totalRevenue,
-    });
+    };
   } catch (error) {
     throw error;
   }
@@ -43,7 +43,7 @@ export const getDailySalesData = async (startDate, endDate) => {
     const dailySalesData = await Order.aggregate([
       {
         $match: {
-          createAt: {
+          createdAt: {
             $gte: startDate,
             $lte: endDate,
           },
@@ -51,7 +51,7 @@ export const getDailySalesData = async (startDate, endDate) => {
       },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createAt" } },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
           totalSales: { $sum: 1 },
           totalRevenue: { $sum: "$totalAmount" },
         },
