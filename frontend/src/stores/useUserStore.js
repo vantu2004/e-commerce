@@ -80,4 +80,48 @@ export const useUserStore = create((set) => ({
       toast.error(error.response.data.message || "Something went wrong");
     }
   },
+
+  refreshToken: async () => {
+    try {
+      await axiosInstance.post("/auth/refresh-token");
+    } catch (error) {
+      console.log(error);
+    }
+  },
 }));
+
+// axios interceptors
+let refreshPromise = null;
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    // ko tính endpoint refresh-token vì nó cx trả 401, nếu ko sẽ rơi vào loop do refresh-token
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/auth/refresh-token")
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        if (refreshPromise) {
+          await refreshPromise;
+          return axiosInstance(originalRequest);
+        }
+
+        refreshPromise = useUserStore.getState().refreshToken();
+        await refreshPromise;
+        refreshPromise = null;
+
+        return axiosInstance(originalRequest);
+      } catch (error) {
+        useUserStore.getState().logout();
+        return Promise.reject(error);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
