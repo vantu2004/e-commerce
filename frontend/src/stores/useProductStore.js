@@ -34,6 +34,18 @@ export const useProductStore = create((set) => ({
     }
   },
 
+  fetchFeaturedProducts: async () => {
+    set({ loading: true });
+    try {
+      const response = await axiosInstance.get("/products/featured");
+      set({ products: response.data.products });
+    } catch (error) {
+      console.error(error.response.data.message || "Something went wrong");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   createProduct: async (newProduct) => {
     set({ loading: true });
     try {
