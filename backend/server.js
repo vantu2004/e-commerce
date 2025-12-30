@@ -19,7 +19,7 @@ const __dirname = path.resolve();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     // mặc định CORS ko cho phép gửi kèm cookie, session nên phải bật true
     credentials: true,
   })
@@ -40,8 +40,8 @@ app.use("/api/analytics", analyticRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/frontend/dist")));
-  app.use((req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  app.get(/^(?!\/api\/).*/, (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../frontend", "dist", "index.html"));
   });
 }
 
